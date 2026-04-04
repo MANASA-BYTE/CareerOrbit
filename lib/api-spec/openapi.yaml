@@ -3,20 +3,35 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: EduPath Student Platform API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: profile
+    description: Student profile management
+  - name: exams
+    description: Competitive exam information
+  - name: notes
+    description: Study notes and materials
+  - name: jobs
+    description: Job listings
+  - name: careers
+    description: Career guidance
+  - name: ai
+    description: AI mentor chatbot
+  - name: notifications
+    description: Government notifications
+  - name: dashboard
+    description: Dashboard summaries
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +39,400 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get student profile
+      parameters:
+        - name: aparId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Student profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentProfile"
+        "404":
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createProfile
+      tags: [profile]
+      summary: Create student profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProfileBody"
+      responses:
+        "201":
+          description: Profile created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentProfile"
+
+  /profile/{id}:
+    put:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update student profile
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProfileBody"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StudentProfile"
+
+  /exams:
+    get:
+      operationId: listExams
+      tags: [exams]
+      summary: List competitive exams
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [central, state, banking, railway, defence, engineering, medical, teaching, law, civil_services]
+        - name: educationLevel
+          in: query
+          schema:
+            type: string
+            enum: [class5_8, class9_10, class11_12, undergraduate, postgraduate, phd]
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of exams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exam"
+
+  /exams/{id}:
+    get:
+      operationId: getExam
+      tags: [exams]
+      summary: Get exam details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Exam details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExamDetail"
+
+  /exams/upcoming:
+    get:
+      operationId: getUpcomingExams
+      tags: [exams]
+      summary: Get upcoming exams with deadlines
+      responses:
+        "200":
+          description: Upcoming exams
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Exam"
+
+  /notes:
+    get:
+      operationId: listNotes
+      tags: [notes]
+      summary: List study notes
+      parameters:
+        - name: folder
+          in: query
+          schema:
+            type: string
+            enum: [school_notes, college_notes, competitive_notes, exam_specific]
+        - name: subject
+          in: query
+          schema:
+            type: string
+        - name: educationLevel
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of notes
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Note"
+    post:
+      operationId: createNote
+      tags: [notes]
+      summary: Upload study note
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateNoteBody"
+      responses:
+        "201":
+          description: Note created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+
+  /notes/{id}:
+    get:
+      operationId: getNote
+      tags: [notes]
+      summary: Get note details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Note details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Note"
+
+  /notes/folders:
+    get:
+      operationId: getNotesFolders
+      tags: [notes]
+      summary: Get note folder summary counts
+      responses:
+        "200":
+          description: Folder summary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FolderSummary"
+
+  /jobs:
+    get:
+      operationId: listJobs
+      tags: [jobs]
+      summary: List job listings
+      parameters:
+        - name: sector
+          in: query
+          schema:
+            type: string
+            enum: [government, private, ngo, startup, psu]
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: educationLevel
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+
+  /jobs/{id}:
+    get:
+      operationId: getJob
+      tags: [jobs]
+      summary: Get job details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Job details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+
+  /jobs/trending:
+    get:
+      operationId: getTrendingJobs
+      tags: [jobs]
+      summary: Get trending/hot job listings
+      responses:
+        "200":
+          description: Trending jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Job"
+
+  /careers:
+    get:
+      operationId: listCareers
+      tags: [careers]
+      summary: List career paths
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+        - name: educationLevel
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of career paths
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Career"
+
+  /careers/{id}:
+    get:
+      operationId: getCareer
+      tags: [careers]
+      summary: Get career path details
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Career details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Career"
+
+  /ai/trending:
+    get:
+      operationId: getAiTrends
+      tags: [ai]
+      summary: Get AI and future tech trends
+      responses:
+        "200":
+          description: AI trends
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AiTrend"
+
+  /ai/chat:
+    post:
+      operationId: chatWithMentor
+      tags: [ai]
+      summary: Chat with AI mentor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatMessageBody"
+      responses:
+        "200":
+          description: AI response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /notifications:
+    get:
+      operationId: listNotifications
+      tags: [notifications]
+      summary: List government exam notifications
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [new_notification, last_date, admit_card, result, answer_key, interview]
+      responses:
+        "200":
+          description: Notifications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Notification"
+
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get dashboard summary stats
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardSummary"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +443,521 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required:
+        - error
+        - message
+
+    StudentProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+        aparId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        educationLevel:
+          type: string
+        currentClass:
+          type: string
+        school:
+          type: string
+        state:
+          type: string
+        district:
+          type: string
+        careerInterests:
+          type: array
+          items:
+            type: string
+        targetExams:
+          type: array
+          items:
+            type: string
+        avatarUrl:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - aparId
+        - name
+        - educationLevel
+
+    CreateProfileBody:
+      type: object
+      properties:
+        aparId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        educationLevel:
+          type: string
+        currentClass:
+          type: string
+        school:
+          type: string
+        state:
+          type: string
+        district:
+          type: string
+        careerInterests:
+          type: array
+          items:
+            type: string
+        targetExams:
+          type: array
+          items:
+            type: string
+      required:
+        - aparId
+        - name
+        - educationLevel
+
+    UpdateProfileBody:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        educationLevel:
+          type: string
+        currentClass:
+          type: string
+        school:
+          type: string
+        state:
+          type: string
+        district:
+          type: string
+        careerInterests:
+          type: array
+          items:
+            type: string
+        targetExams:
+          type: array
+          items:
+            type: string
+
+    Exam:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        fullName:
+          type: string
+        category:
+          type: string
+        educationLevel:
+          type: string
+        conductingBody:
+          type: string
+        applicationStartDate:
+          type: string
+        applicationEndDate:
+          type: string
+        examDate:
+          type: string
+        resultDate:
+          type: string
+        applicationFee:
+          type: string
+        officialWebsite:
+          type: string
+        logoUrl:
+          type: string
+        totalVacancies:
+          type: integer
+        state:
+          type: string
+        isNational:
+          type: boolean
+        isUrgent:
+          type: boolean
+        status:
+          type: string
+          enum: [upcoming, open, closed, result_declared]
+        description:
+          type: string
+      required:
+        - id
+        - name
+        - category
+        - status
+
+    ExamDetail:
+      allOf:
+        - $ref: "#/components/schemas/Exam"
+        - type: object
+          properties:
+            eligibility:
+              type: string
+            syllabus:
+              type: string
+            syllabusUrl:
+              type: string
+            applicationProcedure:
+              type: string
+            requiredDocuments:
+              type: array
+              items:
+                type: string
+            examPattern:
+              type: string
+            previousYearPapers:
+              type: array
+              items:
+                type: string
+
+    Note:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        subject:
+          type: string
+        folder:
+          type: string
+        educationLevel:
+          type: string
+        description:
+          type: string
+        fileUrl:
+          type: string
+        fileType:
+          type: string
+        uploadedBy:
+          type: string
+        downloads:
+          type: integer
+        rating:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+        createdAt:
+          type: string
+      required:
+        - id
+        - title
+        - subject
+        - folder
+
+    CreateNoteBody:
+      type: object
+      properties:
+        title:
+          type: string
+        subject:
+          type: string
+        folder:
+          type: string
+        educationLevel:
+          type: string
+        description:
+          type: string
+        fileUrl:
+          type: string
+        fileType:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+      required:
+        - title
+        - subject
+        - folder
+
+    FolderSummary:
+      type: object
+      properties:
+        folder:
+          type: string
+        label:
+          type: string
+        count:
+          type: integer
+        icon:
+          type: string
+      required:
+        - folder
+        - label
+        - count
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        organization:
+          type: string
+        sector:
+          type: string
+        category:
+          type: string
+        location:
+          type: string
+        state:
+          type: string
+        educationLevel:
+          type: string
+        vacancies:
+          type: integer
+        salaryMin:
+          type: number
+        salaryMax:
+          type: number
+        salaryText:
+          type: string
+        applicationDeadline:
+          type: string
+        applicationUrl:
+          type: string
+        logoUrl:
+          type: string
+        isTrending:
+          type: boolean
+        isUrgent:
+          type: boolean
+        status:
+          type: string
+          enum: [open, closed, upcoming]
+        description:
+          type: string
+        eligibility:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        postedAt:
+          type: string
+      required:
+        - id
+        - title
+        - organization
+        - sector
+        - status
+
+    Career:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        domain:
+          type: string
+        description:
+          type: string
+        educationRequired:
+          type: string
+        averageSalary:
+          type: string
+        growthRate:
+          type: string
+        jobDemand:
+          type: string
+          enum: [very_high, high, moderate, low]
+        skills:
+          type: array
+          items:
+            type: string
+        topCompanies:
+          type: array
+          items:
+            type: string
+        relatedExams:
+          type: array
+          items:
+            type: string
+        roadmap:
+          type: array
+          items:
+            type: string
+        iconUrl:
+          type: string
+        isTrending:
+          type: boolean
+      required:
+        - id
+        - title
+        - domain
+        - jobDemand
+
+    AiTrend:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        impact:
+          type: string
+          enum: [revolutionary, high, moderate]
+        readinessYear:
+          type: integer
+        skills:
+          type: array
+          items:
+            type: string
+        careers:
+          type: array
+          items:
+            type: string
+        iconUrl:
+          type: string
+        isBoom:
+          type: boolean
+      required:
+        - id
+        - title
+        - category
+        - impact
+
+    ChatMessageBody:
+      type: object
+      properties:
+        message:
+          type: string
+        studentId:
+          type: integer
+        context:
+          type: string
+          enum: [career, exam, job, study, general]
+        conversationHistory:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+              content:
+                type: string
+            required:
+              - role
+              - content
+      required:
+        - message
+
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        suggestions:
+          type: array
+          items:
+            type: string
+        relatedExams:
+          type: array
+          items:
+            type: string
+        relatedCareers:
+          type: array
+          items:
+            type: string
+      required:
+        - reply
+
+    Notification:
+      type: object
+      properties:
+        id:
+          type: integer
+        examName:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+        link:
+          type: string
+        isNew:
+          type: boolean
+        isUrgent:
+          type: boolean
+      required:
+        - id
+        - examName
+        - type
+        - title
+
+    DashboardSummary:
+      type: object
+      properties:
+        totalExams:
+          type: integer
+        openExams:
+          type: integer
+        totalJobs:
+          type: integer
+        openJobs:
+          type: integer
+        totalNotes:
+          type: integer
+        totalCareers:
+          type: integer
+        upcomingDeadlines:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              deadline:
+                type: string
+              type:
+                type: string
+            required:
+              - name
+              - deadline
+              - type
+        latestNotifications:
+          type: integer
+        aiTrends:
+          type: integer
+      required:
+        - totalExams
+        - openExams
+        - totalJobs
+        - openJobs
+        - totalNotes
+        - totalCareers
+        - upcomingDeadlines
+        - latestNotifications
+        - aiTrends

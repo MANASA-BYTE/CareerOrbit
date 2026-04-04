@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "EduPath - Student Platform"
+version = "1.0.0"
+id = "artifacts/edupath"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26172
+
+[services.development]
+run = "pnpm --filter @workspace/edupath run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/edupath", "run", "build" ]
+publicDir = "artifacts/edupath/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26172"
+BASE_PATH = "/"
