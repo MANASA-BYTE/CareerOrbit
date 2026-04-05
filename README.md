@@ -1,9 +1,11 @@
-#CareerOrbit
+**#CareerOrbit**
 
 This project is developed using Rust as the backend to build a scalable and high-performance platform for students from Class 5 to PG and PhD. The application aims to provide career guidance, exam notifications, learning resources, and job opportunities in a single unified platform designed to support students throughout their academic journey.
-Features
--Career guidance for students from Class 5 to PG and PhD
--Competitive exams through government notifications
+
+**Features**
+
+-Career guidance for students from Class 5 to PG and PhD.
+-Competitive exams through government notifications.
 -Exam application procedures and required certifications
 -Syllabus copies of different exams across the state and country
 -Student profile creation using APAAR ID
